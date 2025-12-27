@@ -1,7 +1,13 @@
-import React from "react";
+import Header from "@/components/header";
+import HeroSection from "@/modules/hero";
 
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Header />
+      <HeroSection />
+    </div>
+  );
 };
 
 export default Page;
