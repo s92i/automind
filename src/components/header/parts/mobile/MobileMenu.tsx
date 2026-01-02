@@ -1,17 +1,23 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import MobileNavigation from "./MobileNavigation";
 import MobileButtons from "./MobileButtons";
+import { useState } from "react";
+import logo from "@/assets/logo.png";
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-const MobileMenu = ({ isOpen, setIsOpen }: MobileMenuProps) => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild className="md:hidden">
@@ -23,16 +29,11 @@ const MobileMenu = ({ isOpen, setIsOpen }: MobileMenuProps) => {
         side="right"
         className="w-80 bg-background/95 backdrop-blur-xl border-primary/20"
       >
+        <SheetTitle className="sr-only">Mobile menu</SheetTitle>
         <div className="flex items-center justify-between mb-8 px-2">
           <Link href="/">
             <div className="flex items-center gap-2 animate-fade-in">
-              <Image
-                src={require("@/assets/logo.png")}
-                alt="Logo"
-                width={120}
-                height={50}
-                priority
-              />
+              <Image src={logo} alt="Logo" width={120} height={50} priority />
             </div>
           </Link>
         </div>
