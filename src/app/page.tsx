@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import Features from "@/modules/features";
 import HeroSection from "@/modules/hero";
 import HowItWorks from "@/modules/howitworks";
+import Templates from "@/modules/templates";
 
 const Page = () => {
   return (
@@ -10,6 +11,7 @@ const Page = () => {
       <HeroSection />
       <HowItWorks />
       <Features />
+      <Templates />
     </div>
   );
 };

@@ -37,3 +37,61 @@ export const HOW_IT_WORKS_STEPS = [
   description: string;
   details: readonly string[];
 }[];
+
+export const FEATURES = [
+  {
+    icon: "brain",
+    title: "AI Nodes",
+    description: "Integrate OpenAI, Claude, Gemini, and more AI models directly into your workflows",
+    color: "text-neon-purple"
+  },
+  {
+    icon: "puzzle",
+    title: "200+ Integrations",
+    description: "Connect Slack, Notion, Google Sheets, Stripe, Discord, and hundreds more services",
+    color: "text-neon-blue"
+  },
+  {
+    icon: "shield",
+    title: "Secure Credential Vault",
+    description: "Enterprise-grade security for API keys and sensitive data with encryption",
+    color: "text-neon-green"
+  },
+  {
+    icon: "activity",
+    title: "Live Logs & Monitoring",
+    description: "Real-time execution logs, error tracking, and performance monitoring",
+    color: "text-neon-cyan"
+  },
+  {
+    icon: "bookopen",
+    title: "Templates Library",
+    description: "Start fast with pre-built workflows for common automation patterns",
+    color: "text-neon-purple"
+  },
+  {
+    icon: "creditcard",
+    title: "Flexible Billing",
+    description: "Pay with Stripe or crypto through Cryptomus. Scale as you grow",
+    color: "text-neon-blue"
+  },
+  {
+    icon: "zap",
+    title: "High Performance",
+    description: "Lightning-fast execution with automatic scaling and error recovery",
+    color: "text-neon-green"
+  },
+  {
+    icon: "globe",
+    title: "Global Edge Network",
+    description: "Run workflows closer to your users with our wolrdwide infrastructure",
+    color: "text-neon-orange"
+  }
+] as const satisfies readonly {
+  icon: "brain" | "puzzle" | "shield" | "activity" | "bookopen" | "creditcard" | "zap" | "globe";
+  title: string;
+  description: string;
+  color: string;
+}[]
+
+export const TEMPLATES = []
