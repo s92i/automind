@@ -1,5 +1,5 @@
+import { NAV_ITEMS } from "@/components/config/items";
 import NavLink from "./NavLink";
-import { NAV_ITEMS } from "../config/nav";
 
 const Navigation = () => {
   return (
