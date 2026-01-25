@@ -94,4 +94,55 @@ export const FEATURES = [
   color: string;
 }[]
 
-export const TEMPLATES = []
+export const TEMPLATES = [
+  {
+    icon: "creditcard",
+    title: "Stripe -> Notion CRM",
+    description: "Automatically create customer records in Notion when Stripe payments are received",
+    tags: ["E-commerce", "CRM", "Popular"],
+    color: "border-neon-green/30 hover:border-neon-green/50"
+  },
+  {
+    icon: "filetext",
+    title: "Google Form -> Sheets -> Slack",
+    description: "Process form submissions and notify your team with formatted messages",
+    tags: ["Forms", "Team", "Notifications"],
+    color: "border-neon-blue/30 hover:border-neon-blue/50"
+  },
+  {
+    icon: "mail",
+    title: "Gmail -> AI Summarize -> Discord",
+    description: "Summarize important emails with AI and send alerts to Discord channels",
+    tags: ["AI", "Email", "Communication"],
+    color: "border-neon-purple/30 hover:border-neon-purple/50"
+  },
+  {
+    icon: "webhook",
+    title: "Webhook -> HTTP -> Email",
+    description: "Transform webhook data and send customized email notifications",
+    tags: ["Webhooks", "API", "Email"],
+    color: "border-neon-cyan/30 hover:border-neon-cyan/50"
+  },
+  {
+    icon: "database",
+    title: "CSV Import -> Validation -> CRM",
+    description: "Import and validate CSV data before syncing to your CRM system",
+    tags: ["Data", "Validation", "CRM"],
+    color: "border-neon-green/30 hover:border-neon-green/50"
+  },
+  {
+    icon: "bot",
+    title: "Social Media Monitor",
+    description: "Track brand mentions across platforms and get AI-powered sentiment analysis",
+    tags: ["Social", "AI", "Monitoring"],
+    color: "border-neon-blue/30 hover:border-neon-blue/50"
+  }
+] as const satisfies readonly {
+  icon: "creditcard" | "filetext" | "mail" | "webhook" | "database" | "bot";
+  title: string;
+  description: string;
+  tags: string[];
+  color: string
+}[]
+
+export const PRICING = []

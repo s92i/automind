@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import Features from "@/modules/features";
 import HeroSection from "@/modules/hero";
 import HowItWorks from "@/modules/howitworks";
+import Pricing from "@/modules/pricing";
 import Templates from "@/modules/templates";
 
 const Page = () => {
@@ -12,6 +13,7 @@ const Page = () => {
       <HowItWorks />
       <Features />
       <Templates />
+      <Pricing />
     </div>
   );
 };
