@@ -145,4 +145,48 @@ export const TEMPLATES = [
   color: string
 }[]
 
-export const PRICING = []
+export const PLANS = [
+  {
+    name: "Free",
+    price: "$0",
+    period: "forever",
+    description: "Perfect for getting started with workflow automation",
+    icon: "zap",
+    popular: false,
+    features: ["100 workflow runs/month", "5 active workflows", "Basic integrations", "Community support", "Workflow templates", "Basic monitoring"],
+    buttonText: "Start Free",
+    buttonVariant: "secondary" as const
+  },
+  {
+    name: "Pro",
+    price: "$29",
+    period: "per month",
+    description: "For teams ready to scale their automation workflows",
+    icon: "crown",
+    popular: true,
+    features: ["5,000 workflow runs/month", "Unlimited active workflows", "All integrations + AI nodes", "Priority support", "Advanced templates", "Real-time monitoring", "Team collaboration", "Custom webhooks", "Error retry logic"],
+    buttonText: "Start Pro Trial",
+    buttonVariant: "hero" as const
+  },
+  {
+    name: "Business",
+    price: "Custom",
+    period: "enterprise pricing",
+    description: "Enterprise-grade automation for large organizations",
+    icon: "building2",
+    popular: false,
+    features: ["Unlimited workflow runs", "Unlimited everything", "Dedicated infrastructure", "24/7 phone support", "Custom integrations", "Advanced analytics", "SSO & SAML", "SLA guarantees", "White-label options"],
+    buttonText: "Contact Sales",
+    buttonVariant: "outline" as const
+  }
+] as const satisfies readonly {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  icon: "zap" | "crown" | "building2";
+  popular: boolean;
+  features: string[];
+  buttonText: string;
+  buttonVariant: string
+}[]
