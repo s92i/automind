@@ -1,5 +1,7 @@
 import Header from "@/components/header";
+import CTA from "@/modules/cta";
 import Features from "@/modules/features";
+import Footer from "@/modules/footer";
 import HeroSection from "@/modules/hero";
 import HowItWorks from "@/modules/howitworks";
 import Pricing from "@/modules/pricing";
@@ -14,6 +16,8 @@ const Page = () => {
       <Features />
       <Templates />
       <Pricing />
+      <CTA />
+      <Footer />
     </div>
   );
 };
