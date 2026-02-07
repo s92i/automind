@@ -15,7 +15,12 @@ import MobileButtons from "./MobileButtons";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 
-const MobileMenu = () => {
+interface AuthModalProps {
+  isAuthOpen: boolean
+  setIsAuthOpen: (open: boolean) => void
+}
+
+const MobileMenu = ({ isAuthOpen, setIsAuthOpen }: AuthModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -38,7 +43,7 @@ const MobileMenu = () => {
           </Link>
         </div>
         <MobileNavigation />
-        <MobileButtons isOpen={isOpen} setIsOpen={setIsOpen} />
+        <MobileButtons isOpen={isOpen} setIsOpen={setIsOpen} setIsAuthOpen={setIsAuthOpen} />
       </SheetContent>
     </Sheet>
   );
