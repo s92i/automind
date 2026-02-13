@@ -1,4 +1,4 @@
-import { TEMPLATES } from "@/components/config/items"
+import { TEMPLATES } from "@/components/config/home/items"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"

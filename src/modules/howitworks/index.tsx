@@ -1,4 +1,4 @@
-import { HOW_IT_WORKS_STEPS } from "@/components/config/items";
+import { HOW_IT_WORKS_STEPS } from "@/components/config/home/items";
 import { Card } from "@/components/ui/card";
 import {
   Webhook,

@@ -1,4 +1,4 @@
-import { FEATURES } from "@/components/config/items"
+import { FEATURES } from "@/components/config/home/items"
 import { Card } from "@/components/ui/card"
 import { Activity, BookOpen, Brain, CreditCard, Globe, Puzzle, Shield, Zap } from "lucide-react";
 

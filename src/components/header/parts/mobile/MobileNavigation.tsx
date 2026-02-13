@@ -1,4 +1,4 @@
-import { NAV_ITEMS } from "@/components/config/items";
+import { NAV_ITEMS } from "@/components/config/home/items";
 import NavLink from "../NavLink";
 
 const MobileNavigation = () => {
