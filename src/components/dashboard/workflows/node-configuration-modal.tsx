@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { ICON_MAP } from "./flow-utils";
 import {
   AlertTriangle,
@@ -77,6 +77,33 @@ const getPlatformName = (label: string): string => {
   return label.toLowerCase().replace(/\s+/g, "-");
 };
 
+const fetchSavedConnections = async (
+  platform: string,
+): Promise<Connection[]> => {
+  try {
+    const response = await fetch("/api/connections/get-user-connections");
+    if (!response.ok) throw new Error("Failed to fetch connections");
+    const data = await response.json();
+
+    return (data?.connections || []).filter(
+      (conn: Connection) =>
+        conn.platform?.toLowerCase() === platform.toLowerCase(),
+    );
+  } catch (error) {
+    console.error("Error fetching connections:", error);
+    return [];
+  }
+};
+
+const Field = ({ label, children }: { label: string; children: ReactNode }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-300 mb-2">
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
 const NodeConfigurationModal = ({
   isOpen,
   onClose,
@@ -120,21 +147,6 @@ const NodeConfigurationModal = ({
   const selectCls =
     "w-full px-3 py-2 bg-[#0B0F14] border border-gray-600 rounded-md text-white focus:border-green-400 focus:outline-none";
 
-  const Field = ({
-    label,
-    children,
-  }: {
-    label: string;
-    children: ReactNode;
-  }) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-
   const isOAuthProvider = (p: string) =>
     OAUTH_PROVIDERS.includes(p.toLowerCase());
   const isCoreProvider = (p: string) =>
@@ -150,11 +162,92 @@ const NodeConfigurationModal = ({
   const isCore = isCoreProvider(platformName);
   const displayName = getDisplayName(platformName);
 
+  useEffect(() => {
+    if (!isOpen || !nodeData) return;
+
+    setConnections([]);
+    setSelectedConnection(null);
+
+    if (isOAuth || isApiKey) {
+      setLoading(true);
+      fetchSavedConnections(platformName)
+        .then((list) => {
+          setConnections(list);
+          if (list.length > 0) setSelectedConnection(list[0].id);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [isOpen, nodeData, isOAuth, isApiKey, platformName]);
+
   if (!isOpen || !nodeData) return null;
 
-  const handleSave = async () => {};
+  const handleSave = async () => {
+    if (!apiKey && selectedConnection) {
+      const conn = connections.find((c) => c.id === selectedConnection);
+      const config = conn
+        ? {
+            connectionId: conn.id,
+            provider: conn.platform,
+            accountName: conn.account_name,
+          }
+        : {
+            connectionId: selectedConnection,
+            provider: platformName,
+          };
+      onConfigured(nodeData.stepNumber, config);
+      onClose();
+      return;
+    }
 
-  const handleOAuthConnect = (platform: string) => {};
+    if (isApiKey && apiKey.trim()) {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/connections/save-api-key", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            platform: platformName,
+            apiKey: apiKey.trim(),
+            apiEndpoint: apiEndpoint.trim() || undefined,
+          }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error || "Failed to save API key");
+        }
+        const data = await res.json();
+        const updated = await fetchSavedConnections(platformName);
+        setConnections(updated);
+        setSelectedConnection(data?.connection?.id || updated[0]?.id || null);
+
+        const config = {
+          connectionId: data?.connection?.id || updated[0]?.id || null,
+          provider: platformName,
+          apiKey: apiKey.trim(),
+          apiEndpoint: apiEndpoint.trim() || undefined,
+        };
+        onConfigured(nodeData.stepNumber, config);
+        onClose();
+      } catch (error) {
+        console.error("Error saving API key:", error);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (isCore) {
+      const config = { ...coreConfig };
+      onConfigured(nodeData.stepNumber, config);
+      onClose();
+      return;
+    }
+  };
+
+  const handleOAuthConnect = (platform: string) => {
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = `/api/oauth/${platform}/start?returnUrl=${returnUrl}`;
+  };
 
   const renderCoreConfiguration = () => {
     switch (platformName) {
