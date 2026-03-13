@@ -1,0 +1,9 @@
+import type { WorkflowNode } from "./types";
+
+export async function executeNode(node: WorkflowNode): Promise<any> {
+  return {
+    nodeId: node.id,
+    stepNumber: node.data?.stepNumber ?? null,
+    result: node.data?.config ?? null,
+  };
+}

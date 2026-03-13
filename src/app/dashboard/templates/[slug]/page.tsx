@@ -1,5 +1,6 @@
 "use client";
 
+import { testWorkflow } from "@/actions/workflow/test-workflow";
 import { nodeTypes } from "@/components/dashboard/workflows/custom-node";
 import {
   buildInitialFlow,
@@ -8,10 +9,12 @@ import {
   TOOL_NODES,
 } from "@/components/dashboard/workflows/flow-utils";
 import NodeConfigurationModal from "@/components/dashboard/workflows/node-configuration-modal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/hooks/useUser";
+import { useWorkflowRun } from "@/hooks/useWorkflowRun";
 import { mockTemplates } from "@/lib/mock";
 import { Play, Save } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -34,6 +37,7 @@ import ReactFlow, {
   useNodesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { toast } from "sonner";
 
 const linkEdges = (sourceId: string, newId: string, eds: any[]) => {
   const outgoing = eds.filter((e) => e.source === sourceId);
@@ -87,6 +91,7 @@ const Page = () => {
   const params = useParams();
   const slug = params.slug as string;
   const { user } = useUser();
+  const { runSequence, runningStepNumber, isRunning, stop } = useWorkflowRun();
 
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -107,6 +112,17 @@ const Page = () => {
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
+  const nodesWithRunning = nodes?.map((n) => ({
+    ...n,
+    data: {
+      ...(n.data as any),
+      isRunning: Number(
+        (n.data as any)?.stepNumber === Number(runningStepNumber ?? -1),
+      ),
+      hasError: Boolean(nodeErrors[n.id]),
+    },
+  }));
+
   const handleNodesChange = useCallback(
     (changes: any) => {
       onNodesChange(changes);
@@ -123,7 +139,115 @@ const Page = () => {
     event.dataTransfer.effectAllowed = "move";
   }, []);
 
-  const handleTestWorkflow = useCallback(async () => {}, []);
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        setConnLoading(true);
+        const res = await fetch("/api/connections/get-user-connections");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted) setUserConnections(data.connections ?? []);
+      } catch {
+      } finally {
+        if (mounted) setConnLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const allNodesConfigured = useCallback(() => {
+    const configured = new Set(Object.keys(configuredSteps).map(Number));
+    return nodes
+      .filter((n) => typeof (n.data as any)?.stepNumber === "number")
+      .every((n) => configured.has((n.data as any).stepNumber));
+  }, [nodes, configuredSteps]);
+
+  const buildWorkflowData = useCallback(() => {
+    return {
+      templateId: slug,
+      name: template?.name || slug,
+      description: template?.description || "",
+      nodes: nodes.map((n) => ({
+        id: n.id,
+        type: typeof n.type === "string" ? n.type : "custom",
+        position: { x: Number(n.position.x), y: Number(n.position.y) },
+        data: {
+          label: (n.data as any)?.label ?? "",
+          description: (n.data as any)?.description ?? "",
+          icon: (n.data as any)?.icon ?? "",
+          stepNumber: Number((n.data as any)?.stepNumber ?? 0),
+          isConfigured: Boolean((n.data as any)?.isConfigured),
+          config: (n.data as any)?.config ?? null,
+        },
+      })),
+      edges: edges.map((e) => ({
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        sourceHandle: e.sourceHandle ?? null,
+        targetHandle: e.targetHandle ?? null,
+      })),
+    };
+  }, [slug, template, nodes, edges]);
+
+  const handleTestWorkflow = useCallback(async () => {
+    if (isRunning) return;
+
+    const workflowData = buildWorkflowData();
+
+    if (!allNodesConfigured()) {
+      const missingSteps = nodes
+        .filter((n) => typeof (n.data as any)?.stepNumber === "number")
+        .filter((n) => !configuredSteps[(n.data as any).stepNumber])
+        .map((n) => (n.data as any).stepNumber);
+      toast.error(
+        `Please configure all nodes before testing. Missing steps: ${missingSteps}`,
+      );
+      return;
+    }
+
+    try {
+      setNodeErrors({});
+      const serverRun = testWorkflow({ workflowData, user });
+      runSequence(workflowData.nodes, workflowData.edges, { delayMs: 800 });
+
+      const result = await serverRun;
+
+      if (
+        result &&
+        result.ok &&
+        "steps" in result &&
+        Array.isArray(result.steps)
+      ) {
+        const errMap: Record<string, string | null> = {};
+        for (const s of result.steps) {
+          if (s?.status === "error") {
+            errMap[s.nodeId] = s.error || "Step failed";
+          }
+        }
+        setNodeErrors(errMap);
+      } else if (result && !result.ok && "error" in result) {
+        toast.error(result.error || "Workflow run failed");
+      }
+      stop();
+      toast.success("Workflow is working");
+    } catch (err) {
+      toast.error("Failed to test workflow");
+      console.error(err);
+    }
+  }, [
+    buildWorkflowData,
+    user,
+    runSequence,
+    stop,
+    allNodesConfigured,
+    nodes,
+    configuredSteps,
+  ]);
 
   const handleSaveWorkflow = useCallback(async () => {}, []);
 
@@ -243,6 +367,7 @@ const Page = () => {
         return n;
       }),
     );
+    setConfiguredSteps((prev) => ({ ...prev, [stepNumber]: true }));
   }, []);
 
   useEffect(() => {
@@ -287,6 +412,14 @@ const Page = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            {isRunning && (
+              <Badge
+                variant="outline"
+                className="border-green-400 text-green-400"
+              >
+                Running step: {runningStepNumber ?? "-"}
+              </Badge>
+            )}
             {[
               {
                 icon: Play,
@@ -304,6 +437,7 @@ const Page = () => {
               <Button
                 key={text}
                 variant={variant as any}
+                disabled={text === "Test" && isRunning}
                 className={
                   variant === "outline"
                     ? "border-[#334155] text-gray-300 hover:bg-[#1E293B] hover:text-white"
@@ -321,7 +455,7 @@ const Page = () => {
           <CardContent className="p-0 h-full">
             <div ref={reactFlowWrapper} className="h-full w-full">
               <ReactFlow
-                nodes={nodes}
+                nodes={nodesWithRunning}
                 edges={edges}
                 onNodesChange={handleNodesChange}
                 onEdgesChange={onEdgesChange}

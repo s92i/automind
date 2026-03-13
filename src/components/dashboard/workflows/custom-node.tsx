@@ -32,7 +32,7 @@ const CustomNode = ({ data, isConnectable }: NodeProps<NodeData>) => {
       }
     >
       {hasError && (
-        <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-red-500 text-black">
+        <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-red-500 text-black flex items-center justify-center">
           !
         </div>
       )}
@@ -43,7 +43,7 @@ const CustomNode = ({ data, isConnectable }: NodeProps<NodeData>) => {
         </div>
       )}
       {isRunning && typeof data.stepNumber === "number" && (
-        <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-green-500 text-black">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-green-500 text-black">
           {data.stepNumber}
         </div>
       )}

@@ -538,7 +538,7 @@ const NodeConfigurationModal = ({
                   <div className="flex justify-between mt-2">
                     <Button
                       variant="outline"
-                      className="border-[#334155] text-gray-300 hover:bg-[#1E293B] hover:text-black"
+                      className="border-[#334155] text-gray-300 hover:bg-[#1E293B] hover:text-white"
                       onClick={() => handleOAuthConnect(platformName)}
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
