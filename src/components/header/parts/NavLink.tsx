@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Zap, BookOpen, CreditCard, Users, Github } from "lucide-react";
+import { Zap, BookOpen, CreditCard, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP = {
   zap: Zap,
   book: BookOpen,
   "credit-card": CreditCard,
-  users: Users,
-  github: Github,
+  "message-circle": MessageCircle,
 };
 
 interface NavLinkProps {
@@ -47,7 +46,7 @@ const NavLink = ({
         isActive
           ? "text-primary font-semibold"
           : "text-muted-foreground hover:text-primary",
-        className
+        className,
       )}
       style={{ animationDelay: `${delay}s` }}
     >

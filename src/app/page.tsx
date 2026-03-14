@@ -1,4 +1,5 @@
 import Header from "@/components/header";
+import Contact from "@/modules/contact";
 import CTA from "@/modules/cta";
 import Features from "@/modules/features";
 import Footer from "@/modules/footer";
@@ -17,6 +18,7 @@ const Page = () => {
       <Templates />
       <Pricing />
       <CTA />
+      <Contact />
       <Footer />
     </div>
   );

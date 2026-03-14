@@ -146,7 +146,7 @@ export default function VerifyEmailClient({ token }: { token: string }) {
                   </Button>
                   <Button
                     onClick={() => router.push("/")}
-                    className="w-full border-slate-700 text-gray-200 font-semibold py-3 rounded-xl shadow-md hover:bg-slate-800/40 transition"
+                    className="w-full border-slate-700 text-gray-200 font-semibold py-3 rounded-xl shadow-md hover:bg-slate-800/40 hover:text-white transition"
                     variant="outline"
                     size="lg"
                   >
@@ -175,7 +175,7 @@ export default function VerifyEmailClient({ token }: { token: string }) {
                   </Button>
                   <Button
                     onClick={() => router.push("/")}
-                    className="w-full border-gray-700 text-gray-200 font-semibold py-3 rounded-xl shadow-md hover:bg-gray-800/50 transition"
+                    className="w-full border-gray-700 text-gray-200 font-semibold py-3 rounded-xl shadow-md hover:bg-gray-800/50 hover:text-white transition"
                     variant="outline"
                     size="lg"
                   >
