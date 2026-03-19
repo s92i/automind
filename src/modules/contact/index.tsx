@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Script from "next/script";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
@@ -97,7 +97,7 @@ const Contact = () => {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
 

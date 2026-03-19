@@ -30,6 +30,7 @@ function formatPlanLabel(plan?: UsageRecord["plan"]) {
 const Billing = () => {
   const { user } = useUser();
   const [usageData, setUsageData] = useState<UsageRecord | null>(null);
+  const [paymentLoader, setPaymentLoader] = useState(false);
   const currentPlan = formatPlanLabel(usageData?.plan);
 
   useEffect(() => {
@@ -50,8 +51,30 @@ const Billing = () => {
     console.log("Stripe Payment");
   };
 
-  const handleUpgradeCrypto = () => {
-    console.log("Crypto Payment");
+  const handleUpgradeCrypto = async () => {
+    try {
+      setPaymentLoader(true);
+
+      const res = await fetch("/api/billing/cryptomus/link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: "19.99",
+          currency: "USD",
+          user_id: user?.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (data) window.location.href = data;
+      else toast.error("Cryptomus payment link is unavailable at this moment");
+    } catch (error) {
+      toast.error("Failed to start Cryptomus payment");
+    } finally {
+      setPaymentLoader(false);
+    }
   };
 
   const handleSelectPlan = (planName: string) => {

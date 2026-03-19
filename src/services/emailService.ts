@@ -81,4 +81,18 @@ export class EmailService {
       return false;
     }
   }
+
+  static async sendPasswordResetEmail(data: EmailData): Promise<boolean> {
+    try {
+      const html = await this.renderTemplate("password-reset", data);
+      return await this.sendEmail(
+        data.to,
+        "Reset your password - Automind",
+        html,
+      );
+    } catch (error) {
+      console.error("Error sending password reset email", error);
+      return false;
+    }
+  }
 }

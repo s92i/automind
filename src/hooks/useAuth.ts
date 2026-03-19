@@ -14,7 +14,12 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function signup(name: string, email: string, password: string) {
+  async function signup(
+    name: string,
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ) {
     setLoading(true);
     setError(null);
 
@@ -22,13 +27,14 @@ export function useAuth() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, captchaToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Signup failed");
       return true;
     } catch (error: any) {
       setError(error.message);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -85,6 +91,58 @@ export function useAuth() {
     }
   }
 
+  async function forgotPassword(email: string) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unable to send reset email");
+      }
+
+      return true;
+    } catch (error: any) {
+      setError(error.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function resetPassword(token: string, password: string) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unable to reset password");
+      }
+
+      return true;
+    } catch (error: any) {
+      setError(error.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
@@ -101,5 +159,16 @@ export function useAuth() {
     }
   }
 
-  return { user, loading, error, signup, verifyEmail, login, logout, me };
+  return {
+    user,
+    loading,
+    error,
+    signup,
+    verifyEmail,
+    login,
+    forgotPassword,
+    resetPassword,
+    logout,
+    me,
+  };
 }
