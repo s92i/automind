@@ -40,7 +40,7 @@ export const connections = pgTable("connections", {
 
 export const usage = pgTable("usage", {
   id: uuid("id").defaultRandom().primaryKey(),
-  user_id: text("user_id").notNull(),
+  user_id: text("user_id").notNull().unique(),
   plan: text("plan").notNull().default("free"),
   usage_limit: integer("usage_limit").notNull().default(1000),
   usage: integer("usage").notNull().default(0),
